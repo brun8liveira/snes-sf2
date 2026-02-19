@@ -20,13 +20,21 @@
     #game {
       width: 100vw;
       height: 100vh;
+      transition: transform 0.3s ease; /* suaviza a mudança */
+    }
+
+    /* Ajuste para orientação vertical (portrait) */
+    @media (orientation: portrait) {
+      #game {
+        transform: translateY(-15%); /* sobe 15% */
+      }
     }
 
     /* Botão de fullscreen – canto superior ESQUERDO */
     #fullscreen-btn {
       position: fixed;
       top: 8px;
-      left: 8px;              /* aqui troca de right pra left */
+      left: 8px;
       z-index: 20;
       background: rgba(0,0,0,0.6);
       color: #fff;
@@ -35,10 +43,10 @@
       font-size: 14px;
       cursor: pointer;
       user-select: none;
-      display: none;          /* começa escondido */
+      display: none;
     }
 
-    /* Overlay de toque (se você quiser manter) */
+    /* Overlay de toque */
     #overlay {
       position: fixed;
       inset: 0;
@@ -53,15 +61,14 @@
     }
   </style>
 
-	<script>
-    // SNES no seu servidor
+  <script>
     EJS_player = "#game";
     EJS_core = "snes";
-    EJS_gameUrl = "roms/sf2.sfc"; // troque pelo nome certo
+    EJS_gameUrl = "roms/sf2.sfc";
     EJS_pathtodata = "data/";
-    EJS_startOnLoaded = true; // deixa o EmulatorJS mostrar o botão dele
+    EJS_startOnLoaded = true;
     EJS_fullscreenOnLoaded = false;
-    </script>
+  </script>
   <script src="data/loader.js"></script>
 </head>
 <body>
@@ -74,7 +81,6 @@
     const overlay = document.getElementById("overlay");
     const fsBtn   = document.getElementById("fullscreen-btn");
 
-    // Entrar em fullscreen
     async function enterFullscreen() {
       const el = document.documentElement;
       if (el.requestFullscreen) {
@@ -86,32 +92,24 @@
       }
     }
 
-    // Detectar mudanças de fullscreen para mostrar/ocultar o botão
     function updateFullscreenButton() {
-      // Se NÃO está em fullscreen, mostra o botão
       const isFullscreen = document.fullscreenElement != null;
       fsBtn.style.display = isFullscreen ? "none" : "block";
     }
 
     document.addEventListener("fullscreenchange", updateFullscreenButton);
 
-    // Clique no overlay inicial: remove overlay + entra em fullscreen
     overlay.addEventListener("click", async () => {
       overlay.remove();
       await enterFullscreen();
-      // fullscreenchange será disparado e vai esconder o botão
     });
 
-    // Clique no botão de fullscreen (quando não estiver em fullscreen)
     fsBtn.addEventListener("click", async () => {
       await enterFullscreen();
-      // fullscreenchange vai esconder o botão de novo
     });
 
-    // Fallback: bloquear scroll por gesto
     window.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
 
-    // Garantir estado inicial do botão (fora de fullscreen -> aparece)
     updateFullscreenButton();
   </script>
 
